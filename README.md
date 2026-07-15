@@ -2,6 +2,8 @@
 
 A polished, one-click release-notes site powered by [Chirp](https://lbliii.github.io/chirp/) and PostgreSQL.
 
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/chirp-changelog)
+
 Chirp Changelog gives a small product a public timeline, searchable and tagged archives, stable release permalinks, and a standards-based Atom feed. A generated owner token unlocks a lightweight studio for drafting, publishing, editing, and deleting Markdown release notes. There are no user accounts or external services.
 
 ![Chirp Changelog release timeline](assets/railway-marketplace.png)
@@ -15,7 +17,7 @@ uv sync
 uv run python app.py
 ```
 
-Open `http://localhost:8000`. In development, the owner token is `changelog-local-admin` unless `CHIRP_ADMIN_TOKEN` is set.
+Open `http://localhost:8000`. In development, the owner token is `changelog-local-admin` unless `CHANGELOG_ADMIN_TOKEN` is set.
 
 ## Deploy on Railway
 
