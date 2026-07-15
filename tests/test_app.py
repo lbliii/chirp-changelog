@@ -97,6 +97,16 @@ async def test_full_page_health_readiness_asset_detail_and_docs_link(tmp_path: P
     assert favicon.content_type == "image/svg+xml"
     assert '<link rel="icon" href="/favicon.svg" type="image/svg+xml">' in page.text
     assert '<link rel="icon" href="/favicon.svg" type="image/svg+xml">' in detail.text
+    assert '<meta name="htmx-config" content=\'{"includeIndicatorStyles": false}\'>' in page.text
+    assert "htmx.org@2.0.8" not in page.text
+    assert page.text.count('data-chirp="htmx"') == 1
+    csp = page.header("content-security-policy", "")
+    assert csp.count("default-src") == 1
+    assert ", default-src" not in csp
+    assert "'unsafe-inline'" not in csp
+    nonce_match = re.search(r"'nonce-([^']+)'", csp)
+    assert nonce_match is not None
+    assert f'nonce="{nonce_match.group(1)}"' in page.text
     assert "Follow what" in page.text
     assert "A faster path from idea to production" in page.text
     assert 'href="https://lbliii.github.io/chirp/"' in page.text
@@ -118,12 +128,22 @@ async def test_search_tag_filter_and_empty_state_support_htmx(tmp_path: Path) ->
             "/?q=does-not-exist",
             headers={"HX-Request": "true", "HX-Target": "timeline"},
         )
+        page = await client.get("/")
 
     assert "A faster path from idea to production" in search.text
     assert "Calmer forms, clearer failures" in tagged.text
     assert "One template, every response shape" not in tagged.text
     assert "No releases found" in empty.text
     assert "hx-swap-oob" in search.text
+    for response in (search, tagged, empty):
+        assert "<!doctype html>" not in response.text.lower()
+        assert 'class="site-header' not in response.text
+        assert 'class="hero' not in response.text
+        assert response.text.count('id="timeline"') == 1
+
+    timeline_targets = re.findall(r'<form[^>]+hx-target="#timeline"[^>]*>', page.text)
+    assert timeline_targets
+    assert all('hx-swap="outerHTML"' in form for form in timeline_targets)
 
 
 async def test_owner_draft_is_private_then_publish_makes_it_public(tmp_path: Path) -> None:

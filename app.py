@@ -16,6 +16,7 @@ from xml.etree.ElementTree import Element, SubElement, tostring
 from chirp import OOB, App, AppConfig, Fragment, MutationResult, Page, Request, Response
 from chirp.data import PageResult
 from chirp.markdown import MarkdownRenderer, register_markdown_filter
+from chirp.middleware.security_headers import SecurityHeadersConfig
 from chirp.middleware.sessions import get_session
 from chirp.middleware.stack import secure_stack
 
@@ -143,6 +144,7 @@ def create_app(
         worker_mode="async",
         workers=1,
         htmx=True,
+        csp_nonce_enabled=True,
     )
     if secret_key:
         config = replace(config, secret_key=secret_key)
@@ -162,7 +164,10 @@ def create_app(
     default_public_url = f"https://{railway_domain}" if railway_domain else "http://localhost:8000"
     resolved_public_url = (public_url or default_public_url).rstrip("/")
     application = App(config, db=resolved_database_url, migrations=str(MIGRATIONS))
-    for middleware in secure_stack(application.config):
+    for middleware in secure_stack(
+        application.config,
+        headers=SecurityHeadersConfig(content_security_policy=None),
+    ):
         application.add_middleware(middleware)
     markdown: MarkdownRenderer = register_markdown_filter(application, sanitize=True)
 
