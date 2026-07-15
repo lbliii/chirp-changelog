@@ -101,6 +101,9 @@ async def test_full_page_health_readiness_asset_detail_and_docs_link(tmp_path: P
     assert "htmx.org@2.0.8" not in page.text
     assert page.text.count('data-chirp="htmx"') == 1
     csp = page.header("content-security-policy", "")
+    assert csp.count("default-src") == 1
+    assert ", default-src" not in csp
+    assert "'unsafe-inline'" not in csp
     nonce_match = re.search(r"'nonce-([^']+)'", csp)
     assert nonce_match is not None
     assert f'nonce="{nonce_match.group(1)}"' in page.text
