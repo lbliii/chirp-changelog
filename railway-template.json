@@ -1,0 +1,114 @@
+{
+  "$schema": "https://raw.githubusercontent.com/lbliii/chirp-railway-catalog/main/schema/template-manifest.schema.json",
+  "schema_version": 1,
+  "template": {
+    "slug": "chirp-changelog",
+    "title": "Changelog & Release Notes — Chirp + PostgreSQL",
+    "repository": "https://github.com/lbliii/chirp-changelog",
+    "ref": "v0.1.0",
+    "python": "3.14",
+    "chirp_spec": ">=0.10,<0.11",
+    "chirp_locked": "0.10.2",
+    "start_command": "python app.py",
+    "health_path": "/ready",
+    "owner": "lbliii",
+    "support_url": "https://github.com/lbliii/chirp-changelog/issues",
+    "status": "draft",
+    "public_url": null,
+    "demo_url": null,
+    "last_successful_smoke": null,
+    "services": ["web", "postgres"],
+    "variables": [
+      {"name": "PORT", "source": "railway", "secret": false},
+      {"name": "DATABASE_URL", "source": "railway", "secret": true},
+      {"name": "CHIRP_ENV", "source": "template", "secret": false},
+      {"name": "CHIRP_SECRET_KEY", "source": "template", "secret": true},
+      {"name": "CHIRP_ADMIN_TOKEN", "source": "template", "secret": true},
+      {"name": "CHIRP_PUBLIC_URL", "source": "template", "secret": false},
+      {"name": "CHIRP_SKIP_MIGRATIONS", "source": "template", "secret": false}
+    ]
+  },
+  "required_categories": [
+    "asset",
+    "form",
+    "full-page",
+    "health",
+    "htmx",
+    "oob",
+    "readiness"
+  ],
+  "required_operations": [
+    "deployment",
+    "ejection",
+    "restart",
+    "rollback",
+    "shutdown",
+    "update"
+  ],
+  "checks": [
+    {
+      "id": "full-page",
+      "category": "full-page",
+      "path": "/",
+      "contains": ["Chirp Changelog", "Follow what", "0.9.0", "A faster path from idea to production"],
+      "extract": {"csrf": "name=\"_csrf_token\" value=\"([^\"]+)\""}
+    },
+    {
+      "id": "detail-page",
+      "category": "full-page",
+      "path": "/notes/0-9-0",
+      "contains": ["0.9.0", "Typed mutation results", "Back to all updates"]
+    },
+    {
+      "id": "atom-feed",
+      "category": "full-page",
+      "path": "/feed.xml",
+      "headers": {"content-type": "application/atom+xml"},
+      "contains": ["http://www.w3.org/2005/Atom", "<title>0.9.0</title>"]
+    },
+    {
+      "id": "invalid-owner-token",
+      "category": "form",
+      "method": "POST",
+      "path": "/admin/login",
+      "request_headers": {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "HX-Request": "true",
+        "HX-Target": "timeline"
+      },
+      "body": "token=not-the-owner&_csrf_token={{csrf}}",
+      "contains": ["owner token was not accepted", "hx-swap-oob"]
+    },
+    {
+      "id": "htmx-search",
+      "category": "htmx",
+      "path": "/?q=readiness",
+      "request_headers": {"HX-Request": "true", "HX-Target": "timeline"},
+      "contains": ["0.9.0", "Readiness checks", "id=\"timeline\""]
+    },
+    {
+      "id": "oob-tag-filter",
+      "category": "oob",
+      "path": "/?tag=forms",
+      "request_headers": {"HX-Request": "true", "HX-Target": "timeline"},
+      "contains": ["0.8.2", "Calmer forms", "hx-swap-oob", "id=\"filter-meta\""]
+    },
+    {
+      "id": "empty-search",
+      "category": "htmx",
+      "path": "/?q=no-such-release",
+      "request_headers": {"HX-Request": "true", "HX-Target": "timeline"},
+      "contains": ["No releases found", "Clear filters"]
+    },
+    {
+      "id": "asset",
+      "category": "asset",
+      "path": "/styles.css",
+      "headers": {"content-type": "text/css"},
+      "contains": ["--coral:", "--green:"]
+    },
+    {"id": "health", "category": "health", "path": "/health"},
+    {"id": "readiness", "category": "readiness", "path": "/ready"},
+    {"id": "readiness-head", "category": "readiness", "method": "HEAD", "path": "/ready"}
+  ]
+}

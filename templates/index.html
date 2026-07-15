@@ -1,0 +1,158 @@
+{% block page_root %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A calm, focused changelog powered by Chirp.">
+  <title>{% if note %}{{ note.title }} · {% endif %}Chirp Changelog</title>
+  <link rel="alternate" type="application/atom+xml" title="Chirp Changelog" href="/feed.xml">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="https://unpkg.com/htmx.org@2.0.8" integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1GWkZaQIG0wJkwOhTqC7r4R2spVSn12rBDrLRQ" crossorigin="anonymous" defer></script>
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <header class="site-header wrap">
+    <a class="brand" href="/" aria-label="Chirp Changelog home">
+      <span class="brand-mark" aria-hidden="true">C</span>
+      <span>Chirp <strong>Changelog</strong></span>
+    </a>
+    <nav aria-label="Primary">
+      <a href="/feed.xml">Atom feed <span aria-hidden="true">↗</span></a>
+      <a href="https://lbliii.github.io/chirp/">Built with Chirp <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
+
+  <main>
+    {% if note %}
+    {% block note_detail %}
+    <article class="detail wrap">
+      <a class="back" href="/">← Back to all updates</a>
+      <div class="detail-meta"><time datetime="{{ note.release_date }}">{{ note.release_date }}</time>{% for tag in note.tags %}<a class="tag" href="/?tag={{ tag }}">{{ tag }}</a>{% endfor %}</div>
+      <h1>{{ note.title }}</h1>
+      <p class="detail-summary">{{ note.summary }}</p>
+      <div class="prose detail-prose">{{ note.body_markdown | markdown }}</div>
+    </article>
+    {% endblock %}
+    {% else %}
+    {% block timeline %}
+    <section class="hero wrap">
+      <p class="eyebrow"><span></span> Product updates, without the noise</p>
+      <h1>Follow what’s <em>new</em>,<br>better, and fixed.</h1>
+      <p class="lede">A focused home for release notes. Search the archive, follow the feed, and see the thinking behind every ship.</p>
+    </section>
+
+    <section class="workspace wrap">
+      <aside class="rail">
+        <div class="rail-sticky">
+          <form class="search" method="get" action="/" hx-get="/" hx-target="#timeline" hx-push-url="true" hx-trigger="input changed delay:250ms from:#q, change from:#tag">
+            <label for="q">Search the archive</label>
+            <div class="search-box"><span aria-hidden="true">⌕</span><input id="q" name="q" value="{{ q }}" placeholder="Try “forms”"></div>
+            <label for="tag">Filter by topic</label>
+            <select id="tag" name="tag">
+              <option value="">All topics</option>
+              {% for tag in tags %}<option value="{{ tag }}"{% if selected_tag == tag %} selected{% endif %}>{{ tag }}</option>{% endfor %}
+            </select>
+          </form>
+          {% block filter_meta %}
+          <p id="filter-meta" class="filter-meta">{{ page.total }} update{% if page.total != 1 %}s{% endif %}{% if q or selected_tag %} found{% endif %}</p>
+          {% endblock %}
+          <div class="feed-card">
+            <span class="feed-icon" aria-hidden="true">◔</span>
+            <div><strong>Never miss a release</strong><p>Subscribe with any feed reader.</p></div>
+            <a href="/feed.xml" aria-label="Open Atom feed">→</a>
+          </div>
+        </div>
+      </aside>
+
+      <div class="content-column">
+        {% block notice %}<div id="notice" class="notice{% if not notice %} is-empty{% endif %}" role="status" aria-live="polite">{{ notice }}</div>{% endblock %}
+        {% block owner %}
+        <section id="owner" class="owner-panel">
+          {% if admin %}
+          <details class="studio" open>
+            <summary><span>Owner studio</span><small>Draft and publish an update</small></summary>
+            <form method="post" action="/admin/notes" hx-post="/admin/notes" hx-target="#timeline" class="editor-grid">
+              {{ csrf_field() }}
+              <label>Title<input name="title" maxlength="100" placeholder="1.2.0" required></label>
+              <label>Release date<input type="date" name="release_date" value="{{ today }}" required></label>
+              <label class="wide">Summary<input name="summary" maxlength="240" placeholder="The one-sentence reason this release matters" required></label>
+              <label class="wide">Tags<input name="tags" placeholder="forms, performance, security"></label>
+              <label class="wide">Markdown<textarea name="body" rows="8" placeholder="## What changed&#10;&#10;- The useful detail" required></textarea></label>
+              <div class="editor-actions wide">
+                <button class="button ghost" name="action" value="draft">Save draft</button>
+                <button class="button primary" name="action" value="publish">Publish release</button>
+              </div>
+            </form>
+            <form method="post" action="/admin/logout" hx-post="/admin/logout" hx-target="#timeline" class="lock-form">
+              {{ csrf_field() }}<button>Lock owner studio</button>
+            </form>
+          </details>
+          {% else %}
+          <details class="owner-login">
+            <summary>Owner access</summary>
+            <form method="post" action="/admin/login" hx-post="/admin/login" hx-target="#timeline">
+              {{ csrf_field() }}
+              <label for="token">Owner token</label>
+              <div class="login-row"><input id="token" type="password" name="token" autocomplete="current-password" required><button class="button primary">Unlock</button></div>
+            </form>
+          </details>
+          {% endif %}
+        </section>
+        {% endblock %}
+
+        <section id="timeline" class="timeline" aria-label="Release timeline">
+          {% if page.items %}
+            {% for release in page.items %}
+            <article class="release{% if release.status == 'draft' %} draft{% endif %}">
+              <div class="release-date"><time datetime="{{ release.release_date }}">{{ release.release_date }}</time><span></span></div>
+              <div class="release-card">
+                <div class="release-topline">
+                  <div class="tags">{% if release.status == 'draft' %}<span class="tag draft-tag">draft</span>{% endif %}{% for tag in release.tags %}<a class="tag" href="/?tag={{ tag }}">{{ tag }}</a>{% endfor %}</div>
+                  <a class="permalink" href="/notes/{{ release.slug }}" aria-label="Permalink to {{ release.title }}">#</a>
+                </div>
+                <h2><a href="/notes/{{ release.slug }}">{{ release.title }}</a></h2>
+                <p class="summary">{{ release.summary }}</p>
+                <div class="prose">{{ release.body_markdown | markdown }}</div>
+                {% if admin %}
+                <details class="edit-release">
+                  <summary>Edit release</summary>
+                  <form method="post" action="/admin/notes/{{ release.id }}/edit" hx-post="/admin/notes/{{ release.id }}/edit" hx-target="#timeline" class="editor-grid compact">
+                    {{ csrf_field() }}
+                    <label>Title<input name="title" maxlength="100" value="{{ release.title }}" required></label>
+                    <label>Release date<input type="date" name="release_date" value="{{ release.release_date }}" required></label>
+                    <label class="wide">Summary<input name="summary" maxlength="240" value="{{ release.summary }}" required></label>
+                    <label class="wide">Tags<input name="tags" value="{{ release.tags | join(', ') }}"></label>
+                    <label class="wide">Markdown<textarea name="body" rows="8" required>{{ release.body_markdown }}</textarea></label>
+                    <div class="editor-actions wide"><button class="button ghost">Save changes</button></div>
+                  </form>
+                  <div class="danger-row">
+                    {% if release.status == 'draft' %}<form method="post" action="/admin/notes/{{ release.id }}/publish" hx-post="/admin/notes/{{ release.id }}/publish" hx-target="#timeline">{{ csrf_field() }}<button class="button primary">Publish</button></form>{% endif %}
+                    <form method="post" action="/admin/notes/{{ release.id }}/delete" hx-post="/admin/notes/{{ release.id }}/delete" hx-target="#timeline">{{ csrf_field() }}<button class="button danger">Delete</button></form>
+                  </div>
+                </details>
+                {% endif %}
+              </div>
+            </article>
+            {% endfor %}
+            {% if page.total_pages > 1 %}
+            <nav class="pagination" aria-label="Changelog pages">
+              {% if page.has_prev %}<a href="/?q={{ q }}&tag={{ selected_tag }}&page={{ page.prev_page }}">← Newer</a>{% endif %}
+              <span>Page {{ page.page }} of {{ page.total_pages }}</span>
+              {% if page.has_next %}<a href="/?q={{ q }}&tag={{ selected_tag }}&page={{ page.next_page }}">Older →</a>{% endif %}
+            </nav>
+            {% endif %}
+          {% else %}
+            <div class="empty-state"><span>∅</span><h2>No releases found</h2><p>Try a broader search or clear the topic filter.</p><a href="/">Clear filters</a></div>
+          {% endif %}
+        </section>
+      </div>
+    </section>
+    {% endblock %}
+    {% endif %}
+  </main>
+
+  <footer class="wrap"><span>Chirp Changelog</span><p>One service. One database. One-click deploy.</p><a href="https://lbliii.github.io/chirp/">Powered by Chirp</a></footer>
+</body>
+</html>
+{% endblock %}
