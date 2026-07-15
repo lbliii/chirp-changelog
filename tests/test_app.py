@@ -135,7 +135,7 @@ async def test_search_tag_filter_and_empty_state_support_htmx(tmp_path: Path) ->
         assert "<!doctype html>" not in response.text.lower()
         assert 'class="site-header' not in response.text
         assert 'class="hero' not in response.text
-        assert response.text.count('id="timeline"') == 1
+        assert 'id="timeline"' not in response.text
 
 
 async def test_owner_draft_is_private_then_publish_makes_it_public(tmp_path: Path) -> None:

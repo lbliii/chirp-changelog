@@ -108,8 +108,8 @@
         </section>
         {% endblock %}
 
-        {% block timeline %}
         <section id="timeline" class="timeline" aria-label="Release timeline">
+          {% block timeline %}
           {% if page.items %}
             {% for release in page.items %}
             <article class="release{% if release.status == 'draft' %} draft{% endif %}">
@@ -153,8 +153,8 @@
           {% else %}
             <div class="empty-state"><span>∅</span><h2>No releases found</h2><p>Try a broader search or clear the topic filter.</p><a href="/">Clear filters</a></div>
           {% endif %}
+          {% endblock %}
         </section>
-        {% endblock %}
       </div>
     </section>
     {% endif %}
