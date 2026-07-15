@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img">
+  <title>Chirp Changelog timeline mark</title>
+  <rect width="32" height="32" rx="8" fill="#17201a"/>
+  <path d="M11 7v18" stroke="#f5f1e9" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="11" cy="10" r="3.25" fill="#ef745e" stroke="#17201a" stroke-width="1.5"/>
+  <circle cx="11" cy="21" r="3.25" fill="#bce4c8" stroke="#17201a" stroke-width="1.5"/>
+  <path d="M17 10h7M17 16h5M17 22h7" stroke="#f5f1e9" stroke-width="2" stroke-linecap="round"/>
+</svg>

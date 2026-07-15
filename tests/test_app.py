@@ -90,13 +90,19 @@ async def test_full_page_health_readiness_asset_detail_and_docs_link(tmp_path: P
         health = await client.get("/health")
         ready = await client.get("/ready")
         css = await client.get("/styles.css")
+        favicon = await client.get("/favicon.svg")
 
     assert page.status == detail.status == health.status == ready.status == css.status == 200
+    assert favicon.status == 200
+    assert favicon.content_type == "image/svg+xml"
+    assert '<link rel="icon" href="/favicon.svg" type="image/svg+xml">' in page.text
+    assert '<link rel="icon" href="/favicon.svg" type="image/svg+xml">' in detail.text
     assert "Follow what" in page.text
     assert "A faster path from idea to production" in page.text
     assert 'href="https://lbliii.github.io/chirp/"' in page.text
     assert "Typed mutation results" in detail.text
     assert "--coral:" in css.text
+    assert "Release archive" in page.text
 
 
 async def test_search_tag_filter_and_empty_state_support_htmx(tmp_path: Path) -> None:
