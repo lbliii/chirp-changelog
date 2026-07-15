@@ -2,6 +2,11 @@
 
 All notable changes to Chirp Changelog are documented here.
 
+## 0.1.2 - 2026-07-14
+
+- Add the verified 1440×1000 live-deployment screenshot used by the Railway
+  marketplace listing.
+
 ## 0.1.1 - 2026-07-14
 
 - Derive absolute Atom links from Railway's built-in public domain automatically.
