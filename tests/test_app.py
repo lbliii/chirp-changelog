@@ -250,6 +250,23 @@ async def test_markdown_is_sanitized_and_atom_feed_is_valid(tmp_path: Path) -> N
     assert b"javascript:" not in feed.body
 
 
+async def test_atom_feed_uses_railway_public_domain_automatically(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("RAILWAY_PUBLIC_DOMAIN", "changelog-production.up.railway.app")
+    application = create_app(
+        f"sqlite:///{tmp_path / 'railway-domain.db'}",
+        admin_token="test-owner-token",
+        secret_key="test-signing-key-with-enough-entropy",
+    )
+    async with TestClient(application) as client:
+        feed = await client.get(
+            "/feed.xml", headers={"Host": "changelog-production.up.railway.app"}
+        )
+
+    assert "https://changelog-production.up.railway.app/notes/0-9-0" in feed.text
+
+
 async def test_restart_preserves_release_and_ordering(tmp_path: Path) -> None:
     database = tmp_path / "persistent.db"
     first = _application(database)
