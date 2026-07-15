@@ -2,6 +2,12 @@
 
 All notable changes to Chirp Changelog are documented here.
 
+## 0.1.1 - 2026-07-14
+
+- Derive absolute Atom links from Railway's built-in public domain automatically.
+- Namespace the owner token as `CHANGELOG_ADMIN_TOKEN` so Chirp's strict
+  configuration diagnostics stay clean in production.
+
 ## 0.1.0 - 2026-07-14
 
 - Ship the searchable, tag-filtered public release timeline and stable permalinks.

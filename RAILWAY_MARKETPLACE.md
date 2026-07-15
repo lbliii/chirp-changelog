@@ -32,7 +32,7 @@ The application uses server-rendered HTML with HTMX enhancements, so every owner
 - Railway PostgreSQL with persistent storage
 - Python 3.14 and the locked application dependencies
 
-No Redis service or external SaaS account is required. After deployment, open the generated public domain to view the changelog. Retrieve `CHIRP_ADMIN_TOKEN` from the web service variables when you need owner access.
+No Redis service or external SaaS account is required. After deployment, open the generated public domain to view the changelog. Retrieve `CHANGELOG_ADMIN_TOKEN` from the web service variables when you need owner access.
 
 Framework documentation: https://lbliii.github.io/chirp/
 

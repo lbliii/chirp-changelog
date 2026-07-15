@@ -5,7 +5,7 @@
     "slug": "chirp-changelog",
     "title": "Changelog & Release Notes — Chirp + PostgreSQL",
     "repository": "https://github.com/lbliii/chirp-changelog",
-    "ref": "v0.1.0",
+    "ref": "v0.1.1",
     "python": "3.14",
     "chirp_spec": ">=0.10,<0.11",
     "chirp_locked": "0.10.2",
@@ -23,8 +23,8 @@
       {"name": "DATABASE_URL", "source": "railway", "secret": true},
       {"name": "CHIRP_ENV", "source": "template", "secret": false},
       {"name": "CHIRP_SECRET_KEY", "source": "template", "secret": true},
-      {"name": "CHIRP_ADMIN_TOKEN", "source": "template", "secret": true},
-      {"name": "CHIRP_PUBLIC_URL", "source": "template", "secret": false},
+      {"name": "CHANGELOG_ADMIN_TOKEN", "source": "template", "secret": true},
+      {"name": "RAILWAY_PUBLIC_DOMAIN", "source": "railway", "secret": false},
       {"name": "CHIRP_SKIP_MIGRATIONS", "source": "template", "secret": false}
     ]
   },

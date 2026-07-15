@@ -149,18 +149,18 @@ def create_app(
     if not config.secret_key:
         config = replace(config, secret_key="changelog-local-signing-key")
 
-    resolved_admin_token = admin_token or os.environ.get("CHIRP_ADMIN_TOKEN")
+    resolved_admin_token = admin_token or os.environ.get("CHANGELOG_ADMIN_TOKEN")
     if not resolved_admin_token:
         if config.env != "development":
-            raise RuntimeError("CHIRP_ADMIN_TOKEN is required outside development")
+            raise RuntimeError("CHANGELOG_ADMIN_TOKEN is required outside development")
         resolved_admin_token = "changelog-local-admin"
 
     resolved_database_url = database_url or os.environ.get(
         "DATABASE_URL", f"sqlite:///{ROOT / 'changelog.db'}"
     )
-    resolved_public_url = (
-        public_url or os.environ.get("CHIRP_PUBLIC_URL") or "http://localhost:8000"
-    ).rstrip("/")
+    railway_domain = os.environ.get("RAILWAY_PUBLIC_DOMAIN")
+    default_public_url = f"https://{railway_domain}" if railway_domain else "http://localhost:8000"
+    resolved_public_url = (public_url or default_public_url).rstrip("/")
     application = App(config, db=resolved_database_url, migrations=str(MIGRATIONS))
     for middleware in secure_stack(application.config):
         application.add_middleware(middleware)
