@@ -128,6 +128,7 @@ async def test_search_tag_filter_and_empty_state_support_htmx(tmp_path: Path) ->
             "/?q=does-not-exist",
             headers={"HX-Request": "true", "HX-Target": "timeline"},
         )
+        page = await client.get("/")
 
     assert "A faster path from idea to production" in search.text
     assert "Calmer forms, clearer failures" in tagged.text
@@ -138,7 +139,11 @@ async def test_search_tag_filter_and_empty_state_support_htmx(tmp_path: Path) ->
         assert "<!doctype html>" not in response.text.lower()
         assert 'class="site-header' not in response.text
         assert 'class="hero' not in response.text
-        assert 'id="timeline"' not in response.text
+        assert response.text.count('id="timeline"') == 1
+
+    timeline_targets = re.findall(r'<form[^>]+hx-target="#timeline"[^>]*>', page.text)
+    assert timeline_targets
+    assert all('hx-swap="outerHTML"' in form for form in timeline_targets)
 
 
 async def test_owner_draft_is_private_then_publish_makes_it_public(tmp_path: Path) -> None:

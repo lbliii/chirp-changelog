@@ -45,7 +45,7 @@
     <section class="workspace wrap">
       <aside class="rail">
         <div class="rail-sticky">
-          <form class="search" method="get" action="/" hx-get="/" hx-target="#timeline" hx-push-url="true" hx-trigger="input changed delay:250ms from:#q, change from:#tag">
+          <form class="search" method="get" action="/" hx-get="/" hx-target="#timeline" hx-swap="outerHTML" hx-push-url="true" hx-trigger="input changed delay:250ms from:#q, change from:#tag">
             <label for="q">Search the archive</label>
             <div class="search-box"><span aria-hidden="true">⌕</span><input id="q" name="q" value="{{ q }}" placeholder="Try “forms”"></div>
             <label for="tag">Filter by topic</label>
@@ -79,7 +79,7 @@
           {% if admin %}
           <details class="studio" open>
             <summary><span>Owner studio</span><small>Draft and publish an update</small></summary>
-            <form method="post" action="/admin/notes" hx-post="/admin/notes" hx-target="#timeline" class="editor-grid">
+            <form method="post" action="/admin/notes" hx-post="/admin/notes" hx-target="#timeline" hx-swap="outerHTML" class="editor-grid">
               {{ csrf_field() }}
               <label>Title<input name="title" maxlength="100" placeholder="1.2.0" required></label>
               <label>Release date<input type="date" name="release_date" value="{{ today }}" required></label>
@@ -91,14 +91,14 @@
                 <button class="button primary" name="action" value="publish">Publish release</button>
               </div>
             </form>
-            <form method="post" action="/admin/logout" hx-post="/admin/logout" hx-target="#timeline" class="lock-form">
+            <form method="post" action="/admin/logout" hx-post="/admin/logout" hx-target="#timeline" hx-swap="outerHTML" class="lock-form">
               {{ csrf_field() }}<button>Lock owner studio</button>
             </form>
           </details>
           {% else %}
           <details class="owner-login">
             <summary>Owner access</summary>
-            <form method="post" action="/admin/login" hx-post="/admin/login" hx-target="#timeline">
+            <form method="post" action="/admin/login" hx-post="/admin/login" hx-target="#timeline" hx-swap="outerHTML">
               {{ csrf_field() }}
               <label for="token">Owner token</label>
               <div class="login-row"><input id="token" type="password" name="token" autocomplete="current-password" required><button class="button primary">Unlock</button></div>
@@ -108,8 +108,8 @@
         </section>
         {% endblock %}
 
+        {% block timeline %}
         <section id="timeline" class="timeline" aria-label="Release timeline">
-          {% block timeline %}
           {% if page.items %}
             {% for release in page.items %}
             <article class="release{% if release.status == 'draft' %} draft{% endif %}">
@@ -125,7 +125,7 @@
                 {% if admin %}
                 <details class="edit-release">
                   <summary>Edit release</summary>
-                  <form method="post" action="/admin/notes/{{ release.id }}/edit" hx-post="/admin/notes/{{ release.id }}/edit" hx-target="#timeline" class="editor-grid compact">
+                  <form method="post" action="/admin/notes/{{ release.id }}/edit" hx-post="/admin/notes/{{ release.id }}/edit" hx-target="#timeline" hx-swap="outerHTML" class="editor-grid compact">
                     {{ csrf_field() }}
                     <label>Title<input name="title" maxlength="100" value="{{ release.title }}" required></label>
                     <label>Release date<input type="date" name="release_date" value="{{ release.release_date }}" required></label>
@@ -135,8 +135,8 @@
                     <div class="editor-actions wide"><button class="button ghost">Save changes</button></div>
                   </form>
                   <div class="danger-row">
-                    {% if release.status == 'draft' %}<form method="post" action="/admin/notes/{{ release.id }}/publish" hx-post="/admin/notes/{{ release.id }}/publish" hx-target="#timeline">{{ csrf_field() }}<button class="button primary">Publish</button></form>{% endif %}
-                    <form method="post" action="/admin/notes/{{ release.id }}/delete" hx-post="/admin/notes/{{ release.id }}/delete" hx-target="#timeline">{{ csrf_field() }}<button class="button danger">Delete</button></form>
+                    {% if release.status == 'draft' %}<form method="post" action="/admin/notes/{{ release.id }}/publish" hx-post="/admin/notes/{{ release.id }}/publish" hx-target="#timeline" hx-swap="outerHTML">{{ csrf_field() }}<button class="button primary">Publish</button></form>{% endif %}
+                    <form method="post" action="/admin/notes/{{ release.id }}/delete" hx-post="/admin/notes/{{ release.id }}/delete" hx-target="#timeline" hx-swap="outerHTML">{{ csrf_field() }}<button class="button danger">Delete</button></form>
                   </div>
                 </details>
                 {% endif %}
@@ -153,8 +153,8 @@
           {% else %}
             <div class="empty-state"><span>∅</span><h2>No releases found</h2><p>Try a broader search or clear the topic filter.</p><a href="/">Clear filters</a></div>
           {% endif %}
-          {% endblock %}
         </section>
+        {% endblock %}
       </div>
     </section>
     {% endif %}
