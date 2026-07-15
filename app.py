@@ -143,6 +143,7 @@ def create_app(
         worker_mode="async",
         workers=1,
         htmx=True,
+        csp_nonce_enabled=True,
     )
     if secret_key:
         config = replace(config, secret_key=secret_key)

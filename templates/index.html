@@ -9,7 +9,7 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="alternate" type="application/atom+xml" title="Chirp Changelog" href="/feed.xml">
   <link rel="stylesheet" href="/styles.css">
-  <script src="https://unpkg.com/htmx.org@2.0.8" integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1GWkZaQIG0wJkwOhTqC7r4R2spVSn12rBDrLRQ" crossorigin="anonymous" defer></script>
+  <meta name="htmx-config" content='{"includeIndicatorStyles": false}'>
 </head>
 <body>
   <div class="noise" aria-hidden="true"></div>
@@ -36,7 +36,6 @@
     </article>
     {% endblock %}
     {% else %}
-    {% block timeline %}
     <section class="hero wrap">
       <p class="eyebrow"><span></span> Product updates, without the noise</p>
       <h1><span>Follow what’s <em>new</em>,</span><span>better, and fixed.</span></h1>
@@ -109,6 +108,7 @@
         </section>
         {% endblock %}
 
+        {% block timeline %}
         <section id="timeline" class="timeline" aria-label="Release timeline">
           {% if page.items %}
             {% for release in page.items %}
@@ -154,9 +154,9 @@
             <div class="empty-state"><span>∅</span><h2>No releases found</h2><p>Try a broader search or clear the topic filter.</p><a href="/">Clear filters</a></div>
           {% endif %}
         </section>
+        {% endblock %}
       </div>
     </section>
-    {% endblock %}
     {% endif %}
   </main>
 
