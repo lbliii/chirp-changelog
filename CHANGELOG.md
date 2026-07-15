@@ -2,6 +2,14 @@
 
 All notable changes to Chirp Changelog are documented here.
 
+## 0.1.3 - 2026-07-14
+
+- Refine the release timeline into a compact editorial archive with clearer
+  hierarchy, responsive cards, stronger focus states, and narrow-screen support.
+- Add the Chirp Changelog timeline favicon and verify it on full pages and as a
+  standalone SVG asset.
+- Refresh the Railway marketplace image to match the shipped interface.
+
 ## 0.1.2 - 2026-07-14
 
 - Add the verified 1440×1000 live-deployment screenshot used by the Railway

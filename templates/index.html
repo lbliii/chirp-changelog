@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="A calm, focused changelog powered by Chirp.">
   <title>{% if note %}{{ note.title }} · {% endif %}Chirp Changelog</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="alternate" type="application/atom+xml" title="Chirp Changelog" href="/feed.xml">
   <link rel="stylesheet" href="/styles.css">
   <script src="https://unpkg.com/htmx.org@2.0.8" integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1GWkZaQIG0wJkwOhTqC7r4R2spVSn12rBDrLRQ" crossorigin="anonymous" defer></script>
@@ -38,7 +39,7 @@
     {% block timeline %}
     <section class="hero wrap">
       <p class="eyebrow"><span></span> Product updates, without the noise</p>
-      <h1>Follow what’s <em>new</em>,<br>better, and fixed.</h1>
+      <h1><span>Follow what’s <em>new</em>,</span><span>better, and fixed.</span></h1>
       <p class="lede">A focused home for release notes. Search the archive, follow the feed, and see the thinking behind every ship.</p>
     </section>
 
@@ -66,6 +67,13 @@
       </aside>
 
       <div class="content-column">
+        <header class="archive-heading">
+          <div>
+            <p class="section-kicker">Release archive</p>
+            <h2>Recent updates</h2>
+          </div>
+          <p>Latest first <span aria-hidden="true">·</span> <a href="/feed.xml">Subscribe via Atom</a></p>
+        </header>
         {% block notice %}<div id="notice" class="notice{% if not notice %} is-empty{% endif %}" role="status" aria-live="polite">{{ notice }}</div>{% endblock %}
         {% block owner %}
         <section id="owner" class="owner-panel">
