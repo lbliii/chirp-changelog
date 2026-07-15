@@ -4,6 +4,8 @@ A polished, one-click release-notes site powered by [Chirp](https://lbliii.githu
 
 Chirp Changelog gives a small product a public timeline, searchable and tagged archives, stable release permalinks, and a standards-based Atom feed. A generated owner token unlocks a lightweight studio for drafting, publishing, editing, and deleting Markdown release notes. There are no user accounts or external services.
 
+![Chirp Changelog release timeline](assets/railway-marketplace.png)
+
 ## Run locally
 
 You need Python 3.14 and [uv](https://docs.astral.sh/uv/).
